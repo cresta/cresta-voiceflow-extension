@@ -1,0 +1,45 @@
+{
+  "name": "Cresta Voiceflow Extension",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "Enable Cresta Integration with Voiceflow",
+  "homepage_url": "https://github.com/ui3o/external-extension/",
+  "icons": {
+    "128": "icons/icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://creator.voiceflow.com/*",
+        "http://creator.voiceflow.com/*"
+      ],
+      "js": [
+        "src/core.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://creator.voiceflow.com/*",
+        "http://creator.voiceflow.com/*"
+      ],
+      "js": [
+        "src/iframe.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "scripts": [
+      "src/background.js"
+    ]
+  },
+  "permissions": [
+    "https://creator.voiceflow.com/*",
+    "http://localhost/",
+    "storage",
+    "webRequest",
+    "webRequestBlocking"
+  ]
+}
