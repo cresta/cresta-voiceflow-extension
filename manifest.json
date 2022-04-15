@@ -17,17 +17,6 @@
         "src/core.js"
       ],
       "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "https://creator.voiceflow.com/*",
-        "http://creator.voiceflow.com/*"
-      ],
-      "js": [
-        "src/iframe.js"
-      ],
-      "run_at": "document_start",
-      "all_frames": true
     }
   ],
   "background": {

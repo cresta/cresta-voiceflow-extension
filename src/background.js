@@ -1,47 +1,18 @@
 chrome.runtime.onConnect.addListener(function bsListener(cPort) {
-  registerCors();
-  console.assert(cPort.name == "eex-background");
+  // registerCors();
+  console.assert(cPort.name == "cresta-voiceflow-background");
   cPort.onMessage.addListener(function (msg) {
-    console.log(`%ceex-background msg received`, "color:darkviolet");
-    if (msg.type === "iframe") {
-      const iframe = document.querySelector(`#${msg.data.id}`);
-      if (iframe) {
-        iframe.parentNode.removeChild(iframe);
-      }
-      console.assert(msg.data.id);
-      console.assert(msg.data.src);
-      // create iframe
-      const element = document.createElement("iframe");
-      element.src = msg.data.src;
-      element.id = msg.data.id;
-      document.querySelector("html").appendChild(element);
-    }
-    if (msg.type === "localStorageSync") {
-      console.assert(msg.data);
-      const keys = Object.keys(localStorage).filter((k) =>
-        k.startsWith(`eexReadOnly:${msg.data}:`)
-      );
-      const values = [];
-      keys.forEach((key) => {
-        values.push({ key, val: localStorage.getItem(key) });
-        // remove transferred item
-        localStorage.removeItem(key);
-      });
-      cPort.postMessage({ type: "localStorageSync", data: values });
+    console.log(
+      `%cresta-voiceflow-background msg received`,
+      "color:darkviolet"
+    );
+    if (msg.type === "pageload") {
+      console.log(" => ", msg.path);
+      registerCors(msg.path);
     }
   });
 });
 
-window.addEventListener("message", (event) => {
-  if (event.data.type === "saveToParentStorage") {
-    console.log("saveToParentStorage");
-    console.assert(event.data.key);
-    console.assert(event.data.val);
-    localStorage.setItem(event.data.key, event.data.val);
-  }
-});
-
-var urlLinks = [];
 const tabHeaders = {};
 chrome.tabs.onRemoved.addListener((tabId) => delete tabHeaders[tabId]);
 
@@ -76,65 +47,40 @@ function onHeadersReceived(e) {
   return { responseHeaders: e.responseHeaders };
 }
 
-function registerCors() {
+function registerCors(path) {
   try {
     const extra = ["blocking"];
     if (/Firefox/.test(navigator.userAgent) === false) {
       extra.push("extraHeaders");
     }
-    const urls = [];
-    const items = [{ link: "http://localhost:8080/extension.js" }];
-    if (items instanceof Array) {
-      items.forEach((i) => {
-        if (i.link) {
-          urls.push(i.link);
-        }
-      });
-      if (urls.length) {
-        urlLinks = items;
-        chrome.webRequest.onHeadersReceived.addListener(
-          onHeadersReceived,
-          { urls },
-          ["responseHeaders", ...extra]
-        );
-        chrome.webRequest.onBeforeSendHeaders.addListener(
-          function (details) {
-            let requestHeaders = details.requestHeaders;
-            if (requestHeaders.length) {
-              const hasCookie = requestHeaders.some(
-                (header) => header.name.toLowerCase() === "Cookie".toLowerCase()
-              );
-              const hasInclude = urlLinks.some(
-                (u) =>
-                  details.url.includes(u.pathinclude) ||
-                  details.url.includes(u.linkinclude)
-              );
-              if (hasCookie) {
-                tabHeaders[details.tabId] = requestHeaders;
-              } else if (hasInclude) {
-                requestHeaders = tabHeaders[details.tabId];
-              }
+    const urls = [`${path}`];
+    if (urls.length) {
+      urlLinks = items;
+      chrome.webRequest.onHeadersReceived.addListener(
+        onHeadersReceived,
+        { urls },
+        ["responseHeaders", ...extra]
+      );
+      chrome.webRequest.onBeforeSendHeaders.addListener(
+        function (details) {
+          let requestHeaders = details.requestHeaders;
+          if (requestHeaders.length) {
+            const hasCookie = requestHeaders.some(
+              (header) => header.name.toLowerCase() === "Cookie".toLowerCase()
+            );
+            if (hasCookie) {
+              tabHeaders[details.tabId] = requestHeaders;
             }
-            return { requestHeaders };
-          },
-          { urls },
-          ["requestHeaders", ...extra]
-        );
-      }
+          }
+          return { requestHeaders };
+        },
+        { urls },
+        ["requestHeaders", ...extra]
+      );
     } else {
-      console.log("JSON is does not have well format!");
+      console.log("URL no correct");
     }
   } catch (error) {
     console.log("invalid JSON in option!");
   }
 }
-
-// read settings
-// chrome.storage.sync.get({ urllink: "" }, (item) => {
-// });
-
-// chrome.storage.sync.onChanged.addListener((item) => {
-//   chrome.webRequest.onHeadersReceived.removeListener(onHeadersReceived);
-//   registerCors({ urllink: item.urllink.newValue });
-// }
-// );
