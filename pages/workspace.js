@@ -86,8 +86,8 @@ const deployBot = async (name, version, environment) => {
     },
     body: JSON.stringify({
       botName: name,
-      botEnvironment: environment,
-      botVersion: version.toLowerCase(),
+      botEnvironment: environment.toLowerCase(),
+      botVersion: version,
     }),
   })
     .then(async (response) => {
