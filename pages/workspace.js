@@ -79,7 +79,7 @@ const addDeployOption = (e) => {
   }
 };
 const deployBot = async (name, version, environment) => {
-  await fetch(`https://bot-service.chat-staging.cresta.ai/bot-deploy`, {
+  await fetch(`https://bot-service.chat-prod.cresta.ai/bot-deploy`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
