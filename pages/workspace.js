@@ -84,7 +84,8 @@ const addDeployOption = (e) => {
   }
 };
 const openDashboardNewWindow = (e) => {
-  window.open(window.location.href, "_blank");
+  window.open(window.location.href, "_blank").blur();
+  window.focus();
 };
 
 const deployBot = async (name, version, environment) => {
