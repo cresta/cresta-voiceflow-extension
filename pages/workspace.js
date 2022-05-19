@@ -123,5 +123,6 @@ const deployBot = async (name, version, environment) => {
     .catch((err) => {
       alert(err.message);
       console.error("fetcher error", err);
+
     });
 };
