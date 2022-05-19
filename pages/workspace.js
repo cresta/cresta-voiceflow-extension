@@ -25,6 +25,11 @@ jQ.addEventListener("load", () => {
               ".project-list__item-actions",
               addDeployOption
             );
+            jQuery("#app").on(
+              "click",
+              ".project-list__list-item",
+              openDashboardNewWindow
+            );
             observer.disconnect();
           }
         }
@@ -78,6 +83,10 @@ const addDeployOption = (e) => {
     }, 300);
   }
 };
+const openDashboardNewWindow = (e) => {
+  window.open(window.location.href, "_blank");
+};
+
 const deployBot = async (name, version, environment) => {
   await fetch(`https://bot-service.chat-prod.cresta.ai/bot-deploy`, {
     method: "POST",
