@@ -25,11 +25,11 @@ jQ.addEventListener("load", () => {
               ".project-list__item-actions",
               addDeployOption
             );
-            jQuery("#app").on(
-              "click",
-              ".project-list__list-item",
-              openDashboardNewWindow
-            );
+            // jQuery("#app").on(
+            //   "click",
+            //   ".project-list__list-item",
+            //   openDashboardNewWindow
+            // );
             observer.disconnect();
           }
         }
@@ -76,6 +76,7 @@ const addDeployOption = (e) => {
           e.stopPropagation();
           e.preventDefault();
           deployBot(projectName, projectVersion, envName);
+          return false;
         });
       console.log(deployOption, menuItem);
       deployOption.insertBefore(menuItem);
@@ -84,7 +85,7 @@ const addDeployOption = (e) => {
   }
 };
 const openDashboardNewWindow = (e) => {
-  window.open(window.location.href, "_blank").blur();
+  window.open(window.location.href, "_blank", "popup").blur();
   window.focus();
 };
 
@@ -123,6 +124,5 @@ const deployBot = async (name, version, environment) => {
     .catch((err) => {
       alert(err.message);
       console.error("fetcher error", err);
-
     });
 };
